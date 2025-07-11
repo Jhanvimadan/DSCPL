@@ -3,3 +3,7 @@ python-dotenv
 streamlit-javascript
 google-api-python-client
 oauth2client
+google-auth
+google-auth-oauthlib
+oauth2client
+requests
