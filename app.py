@@ -62,6 +62,13 @@ st.markdown("""
         .block-container {
             padding: 1.5rem;
         }
+        .progress-card {
+            background-color: #fff3e0;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -237,6 +244,16 @@ if nav == "📖 Daily Devotion" and st.session_state.get("plan_ready"):
     else:
         st.info("No video available for today.")
 
+    if st.button("✅ Mark as Complete"):
+        if "completed_devotions" not in st.session_state:
+            st.session_state.completed_devotions = []
+        st.session_state.completed_devotions.append({
+            "day": st.session_state.current_day + 1,
+            "topic": st.session_state.selected_topic,
+            **plan
+        })
+        st.success("Marked as complete!")
+
     col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
         if st.button("⬅️ Previous") and st.session_state.current_day > 0:
@@ -252,16 +269,6 @@ if nav == "📖 Daily Devotion" and st.session_state.get("plan_ready"):
         if st.button("Next ➡️") and st.session_state.current_day < len(st.session_state.devotion_plan) - 1:
             st.session_state.current_day += 1
             st.rerun()
-
-            if st.button("Next ➡️") and st.session_state.current_day < len(st.session_state.devotion_plan) - 1:
-                st.session_state.completed_devotions.append({
-                    "topic": st.session_state.selected_topic,
-                    **plan
-                })
-                st.success(f"✅ Day {st.session_state.current_day + 1} marked as complete!")
-                st.session_state.current_day += 1
-                st.rerun()
-
 # --- Prayer ---
 elif nav == "🙏 Prayer":
     st.header("🙏 Prayer")
@@ -422,16 +429,23 @@ elif nav == "⏰ Reminders":
 # --- Progress Dashboard ---
 if nav == "📊 Progress Dashboard":
     st.header("📊 Your Progress")
+
     if "completed_devotions" in st.session_state and st.session_state.completed_devotions:
-        for i, devotion in enumerate(st.session_state.completed_devotions):
-            with st.expander(f"Day {i + 1}: {devotion['topic']}"):
-                st.markdown(f"**Scripture:** {devotion['scripture']}")
-                st.markdown(f"**Prayer:** {devotion['prayer']}")
-                st.markdown(f"**Declaration:** {devotion['declaration']}")
-                if 'verse' in devotion:
-                    st.markdown(f"**Verse:** {devotion['verse']}")
-                if 'video_url' in devotion:
-                    st.markdown("**Video:**")
-                    st.video(devotion['video_url'])
+        for devotion in st.session_state.completed_devotions:
+            devotion_html = f"""
+            <div class='progress-card'>
+                <h4>📅 Day {devotion['day']}: {devotion['topic']}</h4>
+                📖 Scripture: {devotion['scripture']}</p>
+                {'📜 Verse: ' + devotion['verse'] + '</p>' if 'verse' in devotion else ''}
+                🙏 Prayer: {devotion['prayer']}
+                🗣️ Declaration: {devotion['declaration']}
+            </div>
+            """
+            st.markdown(devotion_html, unsafe_allow_html=True)
+
+            if 'video_url' in devotion and devotion['video_url']:
+                st.markdown("🎥 **Video:**")
+                st.video(devotion['video_url'])
+
     else:
         st.info("You haven't completed any devotions yet. Start your journey today!")
