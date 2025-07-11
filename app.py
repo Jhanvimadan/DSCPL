@@ -113,7 +113,7 @@ if nav == "🏠 Home":
         ("🙏 Prayer", "Faith-filled prayers for you."),
         ("🧘 Meditation", "Calm your spirit with guided reflections."),
         ("🛡️ Accountability", "Find strength and stay on track."),
-        ("💬 Just Chat", "Open conversation with your spiritual companion")
+        ("💬 Chat", "Open conversation with your spiritual companion")
     ]
     cols = st.columns(len(services))
     for i, (title, desc) in enumerate(services):
@@ -419,3 +419,19 @@ elif nav == "⏰ Reminders":
                 st.write(f"⏰ **{time_str}** — {message}")
         else:
             st.info("No reminders found for this user.")
+# --- Progress Dashboard ---
+if nav == "📊 Progress Dashboard":
+    st.header("📊 Your Progress")
+    if "completed_devotions" in st.session_state and st.session_state.completed_devotions:
+        for i, devotion in enumerate(st.session_state.completed_devotions):
+            with st.expander(f"Day {i + 1}: {devotion['topic']}"):
+                st.markdown(f"**Scripture:** {devotion['scripture']}")
+                st.markdown(f"**Prayer:** {devotion['prayer']}")
+                st.markdown(f"**Declaration:** {devotion['declaration']}")
+                if 'verse' in devotion:
+                    st.markdown(f"**Verse:** {devotion['verse']}")
+                if 'video_url' in devotion:
+                    st.markdown("**Video:**")
+                    st.video(devotion['video_url'])
+    else:
+        st.info("You haven't completed any devotions yet. Start your journey today!")
