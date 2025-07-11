@@ -1,2 +1,5 @@
 streamlit
 python-dotenv
+streamlit-javascript
+google-api-python-client
+oauth2client
